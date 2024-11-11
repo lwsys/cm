@@ -1,28 +1,36 @@
-type MessageData = {
-  uri: string;
-  data: any;
-};
-export const psend = <
-  T extends {
-    postMessage: (message: string, option?: WindowPostMessageOptions) => void;
-  }
->(
-  target: T,
-  uri: string,
+export const psend = (
+  {
+    window,
+    origin,
+  }: {
+    window: Window;
+    origin: string;
+  },
+  name: string,
   req: any
 ) => {
-  // window.addEventListener("message", (target) => {
-  //   target.source?.postMessage("");
-  // });
-  const payload = JSON.stringify({ uri, data: req });
-  target.postMessage(payload);
+  const payload = JSON.stringify({ name, data: req });
+  window.postMessage(payload, origin);
 };
 
-export const pon = (target: Window, uri: string, cb: (data: any) => void) => {
-  target.addEventListener("message", (event) => {
+export const pon = (name: string, cb: (data: any) => void) => {
+  window.addEventListener("message", (event) => {
+    console.log(event);
     const req = JSON.parse(event.data);
-    if (req.uri === uri) {
+    if (req.name === name) {
       cb(req.data);
     }
   });
 };
+class IframeMessage {
+  constructor() {
+    window.addEventListener("message", (event) => {
+      console.log(event);
+      // const req = JSON.parse(event.data);
+      // if (req.name === name) {
+      //   cb(req.data);
+      // }
+    });
+  }
+  init;
+}
