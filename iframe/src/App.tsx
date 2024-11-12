@@ -2,14 +2,20 @@ import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import { pon } from "../../src";
+import { IframeMessage, pon } from "../../src";
 
 function App() {
   const [count, setCount] = useState(0);
+  // const [instance, setInstance] = useState<IframeMessage | null>(null)
   useEffect(() => {
-    pon("hello", (data) => {
-      console.log(data);
+    const temp = new IframeMessage({
+      window: window.parent,
+      "origin": 'http://127.0.0.1:3000'
     });
+    temp?.on("hello", (req) => {
+      console.log(req.data);
+      return 'world'
+    })
   }, []);
   return (
     <>
